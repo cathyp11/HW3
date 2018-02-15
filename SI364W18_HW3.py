@@ -54,6 +54,14 @@ db = SQLAlchemy(app) # For database use
 ## Should have a __repr__ method that returns strings of a format like:
 #### {Tweet text...} (ID: {tweet id})
 
+class Tweet(db.Model):
+    __tablename__ = tweets
+    id = db.Column(db.Integer, primary_key = True)
+    text = db.Column(db.String(280))
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+
+    def __repr__(self):
+        return "Tweet {} (ID: {})".format(self.text, self.id)
 
 # - User
 ## -- id (Integer, Primary Key)
@@ -64,6 +72,15 @@ db = SQLAlchemy(app) # For database use
 ## Should have a __repr__ method that returns strings of a format like:
 #### {username} | ID: {id}
 
+class User(db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(64), Unique = True)
+    display_name = db.Column(db.String(124))
+    # add relationship between Tweet and User tables
+
+    def __repre__(self):
+        return "{} | ID: {}".format(self.username, self.id)
 
 ########################
 ##### Set up Forms #####
@@ -83,6 +100,18 @@ db = SQLAlchemy(app) # For database use
 
 # TODO 364: Make sure to check out the sample application linked in the readme to check if yours is like it!
 
+class TweetForm(FlaskForm):
+    text = StringField('Tweet Text: ', validators = [Required(), Length(280)])
+    username = StringField('Twitter Username: ', validators = [Required(), Length(64)])
+    displayname = StringField('Display Name: ', validators = [Required()])
+    submit = SubmitField('Submit')
+
+    def validate_username(self, field):
+        if '@' in field.data:
+            raise ValidationError('Do not include @ in username')
+    def validate_displayname(self, field):
+        if ' ' not in field.data: 
+            raise ValidationError('Display name must be at least two words')
 
 ###################################
 ##### Routes & view functions #####
@@ -118,9 +147,9 @@ def internal_server_error(e):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Initialize the form
-
+    form = TweetForm()
     # Get the number of Tweets
-
+    num = len(tweets)
     # If the form was posted to this route,
     ## Get the data from the form
 
