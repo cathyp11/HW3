@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+<p>The tweet text with the most non-whitespace characters is:</p>
+<i>{{ tweet }}</i>, posted by <strong>@{{ user.username }}</strong> ({{ user.display_name }})
+{% endblock %}
