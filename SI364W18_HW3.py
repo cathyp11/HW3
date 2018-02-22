@@ -169,7 +169,7 @@ def index():
             user = u.id
     ## If there already exists a tweet in the database with this text and this user id (the id of that user variable above...) ## Then flash a message about the tweet already existing
     ## And redirect to the list of all tweets
-        t = Tweet.query.filter_by(text = tweet).first()
+        t = Tweet.query.filter_by(text = tweet, user_id = user).first()
         if t:
             flash('Tweet already exists')
             return redirect(url_for('see_all_tweets'))
